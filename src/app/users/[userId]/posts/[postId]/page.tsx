@@ -4,9 +4,9 @@ import { notFound } from "next/navigation";
 export default async function PostPage({
   params,
 }: {
-  params: { userId: string; postId: string };
+  params: Promise<{ userId: string; postId: string }>;
 }) {
-  const postId = Number.parseInt(params.postId, 10);
+  const postId = Number.parseInt((await params).postId, 10);
 
   if (Number.isNaN(postId)) {
     notFound();

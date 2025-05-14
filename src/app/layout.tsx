@@ -40,7 +40,9 @@ export default async function RootLayout({
             {users.map((user) => (
               <li key={user.id}>
                 <Link
-                  className="block overflow-hidden px-2 py-2 text-nowrap whitespace-nowrap text-ellipsis bg-slate-300 hover:bg-slate-400 rounded-sm"
+                  className={
+                    "block overflow-hidden px-2 py-2 text-nowrap whitespace-nowrap text-ellipsis bg-slate-300 hover:bg-slate-400 rounded-sm"
+                  }
                   href={`/users/${user.id}`}
                 >
                   <span>{user.name}</span>

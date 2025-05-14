@@ -6,14 +6,16 @@ import { PropsWithChildren } from "react";
 export default async function UsersLayout({
   children,
   params,
-}: PropsWithChildren<{ params: { userId: string } }>) {
-  const userIdInt = Number.parseInt(params.userId, 10);
+}: PropsWithChildren<{ params: Promise<{ userId: string }> }>) {
+  const userIdInt = Number.parseInt((await params).userId, 10);
 
   if (Number.isNaN(userIdInt)) {
     notFound();
   }
 
-  const posts: Post[] = await fetchPosts(Number.parseInt(params.userId, 10));
+  const posts: Post[] = await fetchPosts(
+    Number.parseInt((await params).userId, 10)
+  );
 
   return (
     // <div className="py-4 px-2 max-w-full overflow-x-hidden flex flex-row">
@@ -29,7 +31,6 @@ export default async function UsersLayout({
               <Link
                 className="block overflow-hidden px-2 py-2  bg-slate-300 hover:bg-slate-400 rounded-sm"
                 href={`/users/${userIdInt}/posts/${post.id}`}
-                title={post.title}
               >
                 <span className="line-clamp-2">{post.title}</span>
               </Link>
