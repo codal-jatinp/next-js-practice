@@ -1,0 +1,5 @@
+FROM postgres:15-alpine
+
+VOLUME [ "/var/lib/postgresql/data" ]
+
+LABEL name="next-practice-db"

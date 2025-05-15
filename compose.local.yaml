@@ -1,11 +1,25 @@
-version: "3.9"
-
 services:
   app:
+    depends_on:
+      - db
     build: .
     ports:
       - 3000:3000
-    command: npm run dev
+    command: "npm run dev"
     volumes:
+      - ./prisma:/app/prisma
       - ./src:/app/src
       - ./public:/app/public
+      - ./migrations:/app/migrations
+    environment:
+      - DATABASE_URL=postgresql://admin:admin@db:5432/next-practice
+
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: next-practice
