@@ -6,7 +6,28 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.local
-    command: npm run dev:docker
+    command:
+      - sh
+      - -c
+      - |
+        # Wait for ngrok to be ready
+        until curl -s --fail http://ngrok:4040/api/tunnels > /dev/null; do
+          echo "Waiting for ngrok..."
+          sleep 2
+        done
+
+        curl -s -o /tmp/ngrok_response.json http://ngrok:4040/api/tunnels
+
+        # Get the ngrok URL
+        NGROK_URL=$(cat /tmp/ngrok_response.json | jq -r '.tunnels[0].public_url')
+        NAME=jatin
+        echo "ngrok URL: $NGROK_URL"
+        echo "ANd name is: $NAME"
+
+        # Set the environment variable in .env file
+        echo "HOST=$(cat /tmp/ngrok_response.json | jq -r '.tunnels[0].public_url')" > /app/.env
+
+        npm run dev:docker
     volumes:
       - ./src/generated:/app/src/generated
       - ./src:/app/src/
@@ -16,7 +37,18 @@ services:
       - 3000:3000
     environment:
       - DATABASE_URL=postgresql://admin:admin@db:5432/app
-    
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok
+    environment:
+      - NGROK_AUTHTOKEN=2x2YKT4CZEbmet1jFtk3oHmcHwD_6dQ9MxHY1NrMQoa7bfiz9
+    ports:
+      - 4040:4040
+    command:
+      - http
+      - "app:3000"
+
   db:
     image: postgres
     restart: always
@@ -26,10 +58,10 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_USER: admin
       POSTGRES_DB: app
-    
+
     volumes:
       - db_data:/var/lib/postgresql/data
-    
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin"]
       interval: 5s

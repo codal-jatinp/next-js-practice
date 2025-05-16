@@ -21,4 +21,6 @@ COPY --from=deps /app/src/generated ./src/generated
 
 COPY . .
 
+RUN apk add curl jq
+
 CMD [ "npm", "run", "dev" ]
