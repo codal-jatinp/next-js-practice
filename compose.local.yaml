@@ -1,10 +1,41 @@
 services:
   app:
+    depends_on:
+      db:
+        condition: service_healthy
     build:
       context: .
       dockerfile: Dockerfile.local
+    command: npm run dev:docker
     volumes:
+      - ./src/generated:/app/src/generated
       - ./src:/app/src/
       - ./public:/app/public/
+      - ./prisma:/app/prisma
     ports:
       - 3000:3000
+    environment:
+      - DATABASE_URL=postgresql://admin:admin@db:5432/app
+    
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: app
+    
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+
+volumes:
+  db_data:

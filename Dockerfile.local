@@ -7,11 +7,17 @@ COPY ./.npmrc ./
 
 RUN npm install
 
+COPY ./prisma/ ./prisma/
+
+RUN npm run prisma -- generate
+
 FROM node:24.0-alpine AS app
 
 WORKDIR /app
 
 COPY --from=deps /app/node_modules/ ./node_modules/
+
+COPY --from=deps /app/src/generated ./src/generated
 
 COPY . .
 
