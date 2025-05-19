@@ -1,3 +1,5 @@
+import prisma from "@/lib/db";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth, { AuthOptions } from "next-auth";
 import Auth0 from "next-auth/providers/auth0";
 
@@ -10,6 +12,10 @@ export const authOptions: AuthOptions = {
       issuer: process.env.AUTH_AUTH0_ISSUER!,
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
+  adapter: PrismaAdapter(prisma),
 };
 
 const inst = NextAuth(authOptions);
