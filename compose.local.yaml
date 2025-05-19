@@ -18,14 +18,9 @@ services:
 
         curl -s -o /tmp/ngrok_response.json http://ngrok:4040/api/tunnels
 
-        # Get the ngrok URL
-        NGROK_URL=$(cat /tmp/ngrok_response.json | jq -r '.tunnels[0].public_url')
-        NAME=jatin
-        echo "ngrok URL: $NGROK_URL"
-        echo "ANd name is: $NAME"
-
         # Set the environment variable in .env file
-        echo "HOST=$(cat /tmp/ngrok_response.json | jq -r '.tunnels[0].public_url')" > /app/.env
+        echo "HOST=$(cat /tmp/ngrok_response.json | jq -r '.tunnels[0].public_url')" >> /app/.env
+        echo "NEXTAUTH_URL=$(cat /tmp/ngrok_response.json | jq -r '.tunnels[0].public_url')" >> /app/.env
 
         npm run dev:docker
     volumes:
@@ -36,7 +31,11 @@ services:
     ports:
       - 3000:3000
     environment:
+      - AUTH_AUTH0_ID=DSHoXLpEQKF9dmMvoZq6TeXCX6krGaj4
+      - AUTH_AUTH0_SECRET=Ys6jXE5DGSOfFU7r-_vrhBhTzzJdF1VNtNGPR0_iqIX0n5cIxR0T4K5sIriF3okr
+      - AUTH_AUTH0_ISSUER=https://dev-u07rw44lujnnkiju.us.auth0.com
       - DATABASE_URL=postgresql://admin:admin@db:5432/app
+      - AUTH_SECRET=rAmPcTs9qz4lbBLqTBiqGRG2DUm4qtx7idnu/RqjlyU=
 
   ngrok:
     image: ngrok/ngrok:latest

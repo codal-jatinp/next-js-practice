@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
 import "./globals.css";
+import NextAuthProvider from "./components/NextAuthProvider";
 
 export const metadata = {
   title: "Next Auth",
@@ -7,11 +8,11 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
-  console.log(process.env);
-
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <NextAuthProvider>{children}</NextAuthProvider>
+      </body>
     </html>
   );
 }
